@@ -2,6 +2,25 @@
 
 A Laravel package for sending Firebase Cloud Messaging (FCM) notifications.
 
+## About
+Laravel FCM Notifications is a powerful package for integrating Firebase Cloud Messaging (FCM) into your Laravel application. It allows you to easily send push notifications to individual users or groups, manage topics, and more. With simple configuration and seamless integration, it's perfect for apps that require push notifications.
+
+## Table of Contents
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [License](#license)
+
+## Features
+- Easy integration with Laravel
+- Send notifications to single or multiple users
+- Manage topics for targeted notifications
+- Supports push notifications on mobile and web apps
+- Error handling for network issues and invalid tokens
+
+## How to Set Up FCM Notifications in Laravel
+Follow the simple steps below to integrate FCM notifications into your Laravel application:
+
 ## Installation
 
 You can install the package via composer:

@@ -1,6 +1,6 @@
 {
     "name": "humamkerdiah/fcm-notifications",
-    "description": "Firebase Cloud Messaging (FCM) notifications package for Laravel",
+    "description": "A Laravel package for sending Firebase Cloud Messaging (FCM) push notifications with easy integration and configuration.",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -8,7 +8,13 @@
         "firebase",
         "fcm",
         "notifications",
-        "push"
+        "push",
+        "push notifications",
+        "FCM Laravel",
+        "firebase notifications",
+        "send push",
+        "laravel push",
+        "FCM integration"
     ],
     "autoload": {
         "psr-4": {
@@ -17,12 +23,12 @@
     },
     "authors": [
         {
-            "name": "humam kerdiah",
+            "name": "Humam Kerdiah",
             "email": "humamkerdia58@gmail.com"
         }
     ],
     "support": {
-        "email": "humamkerdiah97@gmail.com",
+        "email": "humamkerdia58@gmail.com",
         "issues": "https://github.com/humamkerdiah/fcm-notifications/issues",
         "source": "https://github.com/humamkerdiah/fcm-notifications"
     },

@@ -3,6 +3,7 @@
 namespace Humamkerdiah\FcmNotifications\Auth;
 
 use Google\Auth\ApplicationDefaultCredentials;
+use Google\Auth\Credentials\ServiceAccountCredentials;
 use Google\Auth\Middleware\AuthTokenMiddleware;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Client;
@@ -80,9 +81,7 @@ class FcmOAuthProvider
                 'Failed to refresh access token: ' . $e->getMessage()
             );
         }
-    }
-
-    /**
+    }    /**
      * Get Google credentials based on configuration
      */
     private function getCredentials()
@@ -95,9 +94,10 @@ class FcmOAuthProvider
                 );
             }
 
-            return ApplicationDefaultCredentials::getCredentials(
+            // Use ServiceAccountCredentials directly for key file
+            return new ServiceAccountCredentials(
                 self::FCM_SCOPE,
-                ['keyFile' => $this->config['service_account_key_path']]
+                $this->config['service_account_key_path']
             );
         }
 

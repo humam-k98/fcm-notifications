@@ -6,8 +6,8 @@ use Humamkerdiah\FcmNotifications\Contracts\FcmMessage as FcmMessageContract;
 
 class FcmMessage implements FcmMessageContract
 {
-    protected string $title;
-    protected string $body;
+    protected string $title = '';
+    protected string $body = '';
     protected array $data = [];
     protected array $tokens = [];
     protected ?string $topic = null;
@@ -65,9 +65,7 @@ class FcmMessage implements FcmMessageContract
     public function getTopic(): ?string
     {
         return $this->topic;
-    }
-
-    public function toArray(): array
+    }    public function toArray(): array
     {
         $message = [
             'notification' => [
@@ -87,5 +85,72 @@ class FcmMessage implements FcmMessageContract
         }
 
         return $message;
+    }
+
+    /**
+     * Convert message to FCM HTTP v1 API format
+     */
+    public function toV1Array(): array
+    {
+        $message = [
+            'message' => [
+                'notification' => [
+                    'title' => $this->title,
+                    'body' => $this->body,
+                ]
+            ]
+        ];        if (!empty($this->data)) {
+            $message['message']['data'] = $this->convertDataToStrings($this->data);
+        }
+
+        if (!empty($this->tokens)) {
+            // For v1 API, we need to send individual messages for each token
+            $message['message']['token'] = $this->tokens[0];
+        } elseif ($this->topic) {
+            $message['message']['topic'] = $this->topic;
+        }
+
+        return $message;
+    }
+
+    /**
+     * Convert message to FCM HTTP v1 API format for multiple tokens
+     */
+    public function toV1BatchArray(): array
+    {
+        $messages = [];
+        
+        foreach ($this->tokens as $token) {
+            $message = [
+                'notification' => [
+                    'title' => $this->title,
+                    'body' => $this->body,
+                ],
+                'token' => $token
+            ];            if (!empty($this->data)) {
+                $message['data'] = $this->convertDataToStrings($this->data);
+            }
+
+            $messages[] = $message;
+        }
+
+        return $messages;
+    }
+
+    /**
+     * Convert data values to strings for FCM v1 API compatibility
+     * Arrays are JSON encoded, other types are converted to strings
+     */
+    private function convertDataToStrings(array $data): array
+    {
+        $result = [];
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $result[$key] = json_encode($value);
+            } else {
+                $result[$key] = (string) $value;
+            }
+        }
+        return $result;
     }
 }

@@ -1,25 +1,29 @@
 # Laravel FCM Notifications
 
-A Laravel package for sending Firebase Cloud Messaging (FCM) notifications.
+A Laravel package for sending Firebase Cloud Messaging (FCM) notifications with support for both legacy API and the new FCM HTTP v1 API.
 
 ## About
-Laravel FCM Notifications is a powerful package for integrating Firebase Cloud Messaging (FCM) into your Laravel application. It allows you to easily send push notifications to individual users or groups, manage topics, and more. With simple configuration and seamless integration, it's perfect for apps that require push notifications.
+Laravel FCM Notifications is a powerful package for integrating Firebase Cloud Messaging (FCM) into your Laravel application. It supports both the legacy FCM API and the new FCM HTTP v1 API (recommended). Send push notifications to individual users or groups, manage topics, and more with simple configuration and seamless integration.
 
 ## Table of Contents
 - [Installation](#installation)
 - [Configuration](#configuration)
+- [FCM HTTP v1 API (Recommended)](#fcm-http-v1-api-recommended)
+- [Legacy API Support](#legacy-api-support)
 - [Usage](#usage)
+- [Migration Guide](#migration-guide)
 - [License](#license)
 
 ## Features
-- Easy integration with Laravel
-- Send notifications to single or multiple users
-- Manage topics for targeted notifications
-- Supports push notifications on mobile and web apps
-- Error handling for network issues and invalid tokens
-
-## How to Set Up FCM Notifications in Laravel
-Follow the simple steps below to integrate FCM notifications into your Laravel application:
+- ✅ **FCM HTTP v1 API Support** - OAuth 2.0 authentication with service account keys
+- ✅ **Legacy API Support** - Backwards compatibility with server key authentication
+- ✅ Easy integration with Laravel notifications
+- ✅ Send notifications to single or multiple users
+- ✅ Topic-based messaging for targeted notifications
+- ✅ Batch processing for multiple device tokens
+- ✅ Comprehensive error handling and retry mechanisms
+- ✅ Support for both mobile and web push notifications
+- ✅ Laravel 8, 9, 10, and 11 compatibility
 
 ## Installation
 
@@ -37,9 +41,45 @@ After installation, publish the config file:
 php artisan vendor:publish --tag=fcm-config
 ```
 
-This will create a `config/fcm.php` file. Update your `.env` file with your FCM server key:
+This will create a `config/fcm.php` file where you can configure your FCM settings.
+
+## FCM HTTP v1 API (Recommended)
+
+The v1 API uses OAuth 2.0 authentication and is Google's recommended approach for FCM.
+
+### Setup for v1 API
+
+1. **Get Service Account Key:**
+   - Go to [Firebase Console](https://console.firebase.google.com/)
+   - Select your project → Project Settings → Service Accounts
+   - Click "Generate new private key" and download the JSON file
+
+2. **Update your `.env` file:**
 
 ```env
+FCM_API_VERSION=v1
+FCM_PROJECT_ID=your-firebase-project-id
+FCM_SERVICE_ACCOUNT_KEY_PATH=/path/to/your/service-account-key.json
+```
+
+Alternatively, you can use the `GOOGLE_APPLICATION_CREDENTIALS` environment variable:
+
+```env
+GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json
+FCM_API_VERSION=v1
+FCM_PROJECT_ID=your-firebase-project-id
+```
+
+## Legacy API Support
+
+The package still supports the legacy server key authentication for backwards compatibility.
+
+### Setup for Legacy API
+
+Update your `.env` file:
+
+```env
+FCM_API_VERSION=legacy
 FCM_SERVER_KEY=your-server-key-here
 ```
 
@@ -150,22 +190,50 @@ FcmNotification::unsubscribeFromTopic('news', ['device-token-1', 'device-token-2
 
 ## Error Handling
 
-The package throws exceptions for various error cases:
-- Invalid server key
-- Network errors
-- Invalid message format
-- Invalid device tokens
+The package provides comprehensive error handling for both API versions:
 
-Make sure to wrap your calls in try-catch blocks:
+### v1 API Response Format
 
 ```php
 try {
-    $user->notify(new NewMessage());
-} catch (\Exception $e) {
-    // Handle the error
+    $result = FcmNotification::sendToDevices($message);
+    
+    echo "Success count: " . $result['success_count'];
+    echo "Failure count: " . $result['failure_count'];
+    
+    // Handle successful sends
+    foreach ($result['results'] as $result) {
+        echo "Token: " . $result['token'] . " - Message ID: " . $result['message_id'];
+    }
+    
+    // Handle failures
+    foreach ($result['errors'] as $error) {
+        echo "Failed token: " . $error['token'] . " - Error: " . $error['error'];
+    }
+    
+} catch (\Humamkerdiah\FcmNotifications\Exceptions\FcmNotificationException $e) {
     Log::error('FCM Notification failed: ' . $e->getMessage());
 }
 ```
+
+### Legacy API Response Format
+
+```php
+try {
+    $result = FcmNotification::sendToDevices($message);
+    
+    echo "Success: " . $result['success'];
+    echo "Failure: " . $result['failure'];
+    echo "Canonical IDs: " . $result['canonical_ids'];
+    
+} catch (\Exception $e) {
+    Log::error('FCM Notification failed: ' . $e->getMessage());
+}
+```
+
+## Migration Guide
+
+If you're upgrading from the legacy API to v1 API, see our [Migration Guide](MIGRATION_GUIDE.md) for detailed instructions.
 
 ## Testing
 
@@ -178,12 +246,34 @@ use Humamkerdiah\FcmNotifications\Contracts\FcmNotificationSender;
 public function test_it_sends_fcm_notification()
 {
     $mock = Mockery::mock(FcmNotificationSender::class);
-    $mock->shouldReceive('sendToDevices')->once()->andReturn(['message_id' => '1:234']);
+    
+    // For v1 API
+    $mock->shouldReceive('sendToDevices')->once()->andReturn([
+        'success_count' => 1,
+        'failure_count' => 0,
+        'results' => [['token' => 'test-token', 'success' => true, 'message_id' => 'test-message-id']],
+        'errors' => []
+    ]);
+    
     $this->app->instance(FcmNotificationSender::class, $mock);
 
     // Your test code here
 }
 ```
+
+## Requirements
+
+- PHP 7.4 or higher
+- Laravel 8.0 or higher
+- GuzzleHTTP 7.0 or higher
+- Google Auth Library (for v1 API)
+
+## Security Considerations
+
+- Store service account keys securely and never commit them to version control
+- Use environment variables for all sensitive configuration
+- Consider using Google Cloud Secret Manager in production
+- Regularly rotate your service account keys
 
 ## License
 

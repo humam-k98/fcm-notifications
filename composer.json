@@ -1,6 +1,7 @@
 {
     "name": "humamkerdiah/fcm-notifications",
-    "description": "A Laravel package for sending Firebase Cloud Messaging (FCM) push notifications with easy integration and configuration.",
+    "version": "2.0.0",
+    "description": "A Laravel package for sending Firebase Cloud Messaging (FCM) push notifications with support for both legacy API and FCM HTTP v1 API. Features OAuth 2.0 authentication, batch processing, and comprehensive error handling.",
     "type": "library",
     "license": "MIT",
     "keywords": [
@@ -14,11 +15,20 @@
         "firebase notifications",
         "send push",
         "laravel push",
-        "FCM integration"
+        "FCM integration",
+        "FCM v1 API",
+        "OAuth 2.0",
+        "service account",
+        "batch processing"
     ],
     "autoload": {
         "psr-4": {
             "Humamkerdiah\\FcmNotifications\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Humamkerdiah\\FcmNotifications\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -36,9 +46,15 @@
         "php": "^7.4|^8.0",
         "guzzlehttp/guzzle": "^7.0",
         "firebase/php-jwt": "^6.0",
-        "illuminate/support": "^8.0|^9.0|^10.0",
-        "illuminate/contracts": "^8.0|^9.0|^10.0",
-        "illuminate/notifications": "^8.0|^9.0|^10.0"
+        "google/auth": "^1.18",
+        "illuminate/support": "^8.0|^9.0|^10.0|^11.0",
+        "illuminate/contracts": "^8.0|^9.0|^10.0|^11.0",
+        "illuminate/notifications": "^8.0|^9.0|^10.0|^11.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.14",
+        "phpunit/phpunit": "^11.5",
+        "mockery/mockery": "^1.6"
     },
     "extra": {
         "laravel": {

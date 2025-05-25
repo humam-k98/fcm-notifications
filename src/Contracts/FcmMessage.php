@@ -52,10 +52,18 @@ interface FcmMessage
     /**
      * Get the target topic
      */
-    public function getTopic(): ?string;
-
-    /**
+    public function getTopic(): ?string;    /**
      * Get the notification payload as array
      */
     public function toArray(): array;
+
+    /**
+     * Get the notification payload as FCM HTTP v1 API array
+     */
+    public function toV1Array(): array;
+
+    /**
+     * Get the notification payload as FCM HTTP v1 API batch array for multiple tokens
+     */
+    public function toV1BatchArray(): array;
 }

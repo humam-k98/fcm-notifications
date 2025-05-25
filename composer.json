@@ -1,6 +1,6 @@
 {
     "name": "humamkerdiah/fcm-notifications",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "A Laravel package for sending Firebase Cloud Messaging (FCM) push notifications with support for both legacy API and FCM HTTP v1 API. Features OAuth 2.0 authentication, batch processing, and comprehensive error handling.",
     "type": "library",
     "license": "MIT",
